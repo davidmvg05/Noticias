@@ -4,6 +4,11 @@ Design moderno com acentos na cor #0051ff, autenticação por PIN,
 Google Tradutor com seleção automática de Português e resiliência de imagens.
 """
 
+import os
+
+# 1. Garantir que a pasta temporária existe imediatamente no arranque do servidor
+os.makedirs(".tmp", exist_ok=True)
+
 import json
 import html
 from pathlib import Path
@@ -851,10 +856,10 @@ def popup_login():
         )
 
         if submetido:
-            expected_pin = st.secrets.get("MEU_PIN")
+            expected_pin = str(st.secrets.get("MEU_PIN", "")).strip()
             if not expected_pin:
-                st.error("⚠️ Configuração em falta: 'MEU_PIN' não definido em st.secrets.")
-            elif pin_inserido.strip() == str(expected_pin).strip():
+                st.error("⚠️ Configuração em falta: 'MEU_PIN' não definido nos Secrets do Streamlit.")
+            elif pin_inserido.strip() == expected_pin:
                 st.session_state.authenticated = True
                 st.rerun()
             else:
@@ -871,10 +876,15 @@ if not st.session_state.authenticated:
 # ==============================================================================
 
 def load_news_data() -> dict:
-    """Carrega as notícias de .tmp/noticias_filtradas.json ou executa a coleta se ausente."""
+    """Carrega as notícias de .tmp/noticias_filtradas.json com resiliência total contra FileNotFoundError."""
+    os.makedirs(".tmp", exist_ok=True)
     if not OUTPUT_FILE.exists():
-        with st.spinner("Inicializando primeira coleta de notícias RSS..."):
-            return run_collection()
+        try:
+            with st.spinner("Inicializando primeira coleta de notícias RSS..."):
+                return run_collection()
+        except Exception as e:
+            st.warning("⚠️ Não foi possível coletar as notícias automaticamente na inicialização.")
+            return {"atualizado_em": "Pendente", "total_artigos": 0, "categorias": {}}
 
     try:
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
@@ -883,8 +893,11 @@ def load_news_data() -> dict:
                 return run_collection()
             return data
     except Exception:
-        with st.spinner("Recarregando feeds RSS após erro de leitura..."):
-            return run_collection()
+        try:
+            with st.spinner("Recarregando feeds RSS após erro de leitura..."):
+                return run_collection()
+        except Exception:
+            return {"atualizado_em": "Erro", "total_artigos": 0, "categorias": {}}
 
 
 dados_noticias = load_news_data()
@@ -1056,6 +1069,10 @@ def render_article_card(item: dict) -> str:
 
 if not artigos_exibicao:
     st.info("Nenhuma notícia disponível para a categoria selecionada de momento.")
+    if st.button("Buscar Notícias Agora", type="primary"):
+        with st.spinner("A recolher novidades dos feeds RSS..."):
+            run_collection()
+            st.rerun()
 else:
     for i in range(0, len(artigos_exibicao), 2):
         col1, col2 = st.columns(2)
