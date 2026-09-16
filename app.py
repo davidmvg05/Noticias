@@ -463,73 +463,122 @@ st.html(
         flex-grow: 1;
     }
 
-    .card-bottom-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        margin-top: auto;
-        padding-top: 8px;
-        flex-shrink: 0;
-        flex-wrap: wrap;
+    /* 7.1. Estilização do Cartão em Contentor Streamlit (@st.fragment) */
+    div[class*="st-key-card_"] {
+        margin-bottom: 24px !important;
     }
 
-    /* Botão Traduzir Cartão (Individual PT-PT) */
-    .btn-translate-card {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(0, 81, 255, 0.08) !important;
-        color: #0051ff !important;
-        border: 1.5px solid #0051ff !important;
-        border-radius: 8px;
-        font-size: 0.84rem;
-        font-weight: 600;
-        padding: 7px 14px;
-        cursor: pointer;
+    div[class*="st-key-card_"] > div[data-testid="stVerticalBlockBorderWrapper"],
+    div[class*="st-key-card_"] [data-testid="stVerticalBlockBorderWrapper"] {
+        height: 525px !important;
+        background: rgba(255, 255, 255, 0.035) !important;
+        border: 1px solid rgba(128, 128, 128, 0.18) !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        padding: 0 !important;
         box-shadow: none !important;
         transform: none !important;
-        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
-        white-space: nowrap;
-        user-select: none;
-        outline: none;
+        transition: border-color 0.15s ease !important;
     }
 
-    .btn-translate-card:hover {
-        background: rgba(0, 81, 255, 0.16) !important;
+    div[class*="st-key-card_"] > div[data-testid="stVerticalBlockBorderWrapper"]:hover,
+    div[class*="st-key-card_"] [data-testid="stVerticalBlockBorderWrapper"]:hover {
+        border-color: #0051ff !important;
+    }
+
+    div[class*="st-key-card_"] div[data-testid="stVerticalBlock"] {
+        gap: 0 !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+
+    div[class*="st-key-card_"] div[data-testid="stHorizontalBlock"] {
+        padding: 0 18px 16px 18px !important;
+        margin-top: auto !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    /* Botão Traduzir (PT) - Secundário (inativo) */
+    div[class*="st-key-btn_tr_"] button,
+    div[class*="st-key-card_"] button[kind="secondary"] {
+        border-radius: 8px !important;
+        border: 1.5px solid #0051ff !important;
+        color: #0051ff !important;
+        background-color: rgba(0, 81, 255, 0.08) !important;
+        font-size: 0.84rem !important;
+        font-weight: 600 !important;
+        padding: 6px 12px !important;
+        box-shadow: none !important;
+        transform: none !important;
+        transition: all 0.15s ease !important;
+        height: 38px !important;
+    }
+
+    div[class*="st-key-btn_tr_"] button:hover,
+    div[class*="st-key-card_"] button[kind="secondary"]:hover {
+        background-color: rgba(0, 81, 255, 0.16) !important;
         color: #003ecb !important;
         border-color: #003ecb !important;
     }
 
-    .btn-translate-card.translated {
-        background: #0051ff !important;
+    /* Botão Traduzir - Primário (ativo - Ver Original EN) */
+    div[class*="st-key-btn_tr_"] button[kind="primary"],
+    div[class*="st-key-card_"] button[kind="primary"] {
+        border-radius: 8px !important;
+        border: 1.5px solid #0051ff !important;
         color: #ffffff !important;
-        border-color: #0051ff !important;
+        background-color: #0051ff !important;
+        background: #0051ff !important;
+        font-size: 0.84rem !important;
+        font-weight: 600 !important;
+        padding: 6px 12px !important;
+        box-shadow: none !important;
+        transform: none !important;
+        transition: all 0.15s ease !important;
+        height: 38px !important;
     }
 
-    /* Botão firme e estável Ler o Artigo Original com #0051ff */
-    .btn-read-article {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        background: #0051ff;
+    div[class*="st-key-btn_tr_"] button[kind="primary"]:hover,
+    div[class*="st-key-card_"] button[kind="primary"]:hover {
+        background-color: #003ecb !important;
+        background: #003ecb !important;
+        border-color: #003ecb !important;
+    }
+
+    /* Botão Ler Artigo Original (st.link_button) */
+    div[class*="st-key-card_"] a[data-testid="baseButton-secondary"],
+    div[class*="st-key-card_"] a[data-testid="baseButton-primary"],
+    div[class*="st-key-card_"] [data-testid="stLinkButton"] a {
+        border-radius: 8px !important;
+        background: #0051ff !important;
+        border: 1.5px solid #0051ff !important;
         color: #ffffff !important;
+        font-size: 0.84rem !important;
+        font-weight: 600 !important;
+        padding: 6px 14px !important;
         text-decoration: none !important;
-        font-size: 0.86rem;
-        font-weight: 600;
-        padding: 8px 18px;
-        border-radius: 8px;
         box-shadow: none !important;
         transform: none !important;
         transition: background-color 0.15s ease !important;
-        white-space: nowrap;
-        margin-left: auto;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 38px !important;
+        white-space: nowrap !important;
     }
 
-    .btn-read-article:hover {
+    div[class*="st-key-card_"] a[data-testid="baseButton-secondary"]:hover,
+    div[class*="st-key-card_"] [data-testid="stLinkButton"] a:hover {
         background: #003ecb !important;
-        box-shadow: none !important;
-        transform: none !important;
+        border-color: #003ecb !important;
+    }
+
+    div[class*="st-key-card_"] a[data-testid="baseButton-secondary"] *,
+    div[class*="st-key-card_"] [data-testid="stLinkButton"] a * {
+        color: #ffffff !important;
     }
 
     /* 8. Pop-up do PIN: Customização visual do modal (Light e Dark Mode) */
@@ -813,41 +862,6 @@ st.html(
     }
     window.addEventListener('DOMContentLoaded', disablePinAutocomplete);
     setInterval(disablePinAutocomplete, 300);
-
-    // Função de alternância da tradução do cartão individual (sem recarregar o Streamlit)
-    function toggleCardTranslation(cardId, btn) {
-        var card = document.getElementById(cardId);
-        if (!card) return;
-        var titleEl = card.querySelector('.card-news-title');
-        var leadEl = card.querySelector('.card-news-lead');
-        var btnText = btn.querySelector('.btn-text');
-        var isTranslated = btn.getAttribute('data-translated') === 'true';
-
-        if (isTranslated) {
-            // Reverter para o texto original (EN)
-            if (titleEl && titleEl.getAttribute('data-en')) {
-                titleEl.textContent = titleEl.getAttribute('data-en');
-            }
-            if (leadEl && leadEl.getAttribute('data-en')) {
-                leadEl.textContent = leadEl.getAttribute('data-en');
-            }
-            btn.setAttribute('data-translated', 'false');
-            btn.classList.remove('translated');
-            if (btnText) btnText.textContent = 'Traduzir (PT)';
-        } else {
-            // Alternar para o texto em Português de Portugal (pt-PT)
-            if (titleEl && titleEl.getAttribute('data-pt')) {
-                titleEl.textContent = titleEl.getAttribute('data-pt');
-            }
-            if (leadEl && leadEl.getAttribute('data-pt')) {
-                leadEl.textContent = leadEl.getAttribute('data-pt');
-            }
-            btn.setAttribute('data-translated', 'true');
-            btn.classList.add('translated');
-            if (btnText) btnText.textContent = 'Ver Original (EN)';
-        }
-    }
-    window.toggleCardTranslation = toggleCardTranslation;
     </script>
 
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -1083,11 +1097,12 @@ else:
 
 
 # ==============================================================================
-# 5. RENDERIZAÇÃO DOS CARTÕES VERTICAIS (SEM BOTÃO VER TRADUÇÃO)
+# 5. RENDERIZAÇÃO DOS CARTÕES COM FRAGMENTOS ISOLADOS (@st.fragment)
 # ==============================================================================
 
-def render_article_card(item: dict) -> str:
-    """Renderiza o HTML do cartão com suporte a tradução individual instantânea via JavaScript."""
+@st.fragment
+def render_article_card(item: dict):
+    """Renderiza cada cartão isoladamente via @st.fragment para tradução instantânea em Python."""
     cat_key = item.get("_cat_key", "economia")
     img_url = get_article_image(item, cat_key)
     fallback_img = get_category_fallback_image(item, cat_key)
@@ -1098,14 +1113,10 @@ def render_article_card(item: dict) -> str:
     raw_url = item.get("url", "#")
     raw_date = item.get("data_publicacao", "")
     
-    card_id = f"news_card_{item.get('id', hashlib.md5(raw_title.encode('utf-8')).hexdigest())}"
+    clean_hash = hashlib.md5(raw_title.encode("utf-8")).hexdigest()[:10]
+    card_id = f"{item.get('id', clean_hash)}"
+    trans_key = f"trad_{card_id}"
     
-    safe_title = html.escape(raw_title)
-    safe_lead = html.escape(raw_lead)
-    safe_source = html.escape(raw_source)
-    safe_url = html.escape(raw_url, quote=True)
-    safe_date = html.escape(raw_date)
-
     # Obter tradução (do item pré-calculado ou através do módulo com cache persistente)
     is_en = item.get("is_en")
     pt_title = item.get("titulo_pt")
@@ -1113,48 +1124,48 @@ def render_article_card(item: dict) -> str:
     if is_en is None or pt_title is None or pt_lead is None:
         is_en, pt_title, pt_lead = get_article_translation(raw_title, raw_lead, raw_source)
 
-    if is_en and (pt_title != raw_title or pt_lead != raw_lead):
-        safe_attr_title_en = html.escape(raw_title, quote=True)
-        safe_attr_title_pt = html.escape(pt_title, quote=True)
-        safe_attr_lead_en = html.escape(raw_lead, quote=True)
-        safe_attr_lead_pt = html.escape(pt_lead, quote=True)
+    is_trad = st.session_state.get(trans_key, False)
+    
+    title_to_show = pt_title if (is_trad and pt_title) else raw_title
+    lead_to_show = pt_lead if (is_trad and pt_lead) else raw_lead
 
-        title_html = f'<div class="card-news-title" data-en="{safe_attr_title_en}" data-pt="{safe_attr_title_pt}">{safe_title}</div>'
-        lead_html = f'<div class="card-news-lead" data-en="{safe_attr_lead_en}" data-pt="{safe_attr_lead_pt}">{safe_lead}</div>'
-        translate_btn_html = (
-            f'<button type="button" class="btn-translate-card" onclick="toggleCardTranslation(\'{card_id}\', this)" data-translated="false" title="Traduzir para Português de Portugal">'
-            f'<i class="fa-solid fa-language"></i> <span class="btn-text">Traduzir (PT)</span>'
-            f'</button>'
+    safe_title = html.escape(title_to_show)
+    safe_lead = html.escape(lead_to_show)
+    safe_source = html.escape(raw_source)
+    safe_date = html.escape(raw_date)
+
+    has_translation = is_en and (pt_title != raw_title or pt_lead != raw_lead)
+
+    with st.container(border=True, key=f"card_{card_id}"):
+        st.markdown(
+            f"""
+            <div class="card-img-wrapper">
+                <span class="source-badge-floating">{safe_source}</span>
+                <img src="{img_url}" alt="{safe_title}" class="card-img-top" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='{fallback_img}';" />
+            </div>
+            <div class="card-body-content">
+                <div class="date-text-clean">{safe_date}</div>
+                <div class="card-news-title">{safe_title}</div>
+                <div class="card-news-lead">{safe_lead}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
-    else:
-        title_html = f'<div class="card-news-title">{safe_title}</div>'
-        lead_html = f'<div class="card-news-lead">{safe_lead}</div>'
-        translate_btn_html = ""
 
-    bottom_html = (
-        f'<div class="card-bottom-row">'
-        f'{translate_btn_html}'
-        f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer" class="btn-read-article">'
-        f'<i class="fa-solid fa-arrow-up-right-from-square"></i> Ler o Artigo Original'
-        f'</a>'
-        f'</div>'
-    )
-
-    # Construção plana do HTML sem espaços de indentação que acionem blocos de código Markdown
-    return (
-        f'<div class="news-card-vertical" id="{card_id}">'
-        f'<div class="card-img-wrapper">'
-        f'<span class="source-badge-floating">{safe_source}</span>'
-        f'<img src="{img_url}" alt="{safe_title}" class="card-img-top" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src=\'{fallback_img}\';" />'
-        f'</div>'
-        f'<div class="card-body-content">'
-        f'<div class="date-text-clean">{safe_date}</div>'
-        f'{title_html}'
-        f'{lead_html}'
-        f'{bottom_html}'
-        f'</div>'
-        f'</div>'
-    )
+        if has_translation:
+            col_tr, col_lk = st.columns([1, 1], gap="small")
+            with col_tr:
+                btn_label = "Ver Original (EN)" if is_trad else "Traduzir (PT)"
+                btn_type = "primary" if is_trad else "secondary"
+                if st.button(btn_label, key=f"btn_tr_{card_id}", type=btn_type, use_container_width=True):
+                    st.session_state[trans_key] = not is_trad
+                    st.rerun(scope="fragment")
+            with col_lk:
+                st.link_button("Ler Artigo Original", url=raw_url, use_container_width=True)
+        else:
+            _, col_lk = st.columns([1, 1], gap="small")
+            with col_lk:
+                st.link_button("Ler Artigo Original", url=raw_url, use_container_width=True)
 
 
 if not artigos_exibicao:
@@ -1169,9 +1180,9 @@ else:
 
         # Coluna 1
         with col1:
-            st.markdown(render_article_card(artigos_exibicao[i]), unsafe_allow_html=True)
+            render_article_card(artigos_exibicao[i])
 
         # Coluna 2 (se existir)
         if i + 1 < len(artigos_exibicao):
             with col2:
-                st.markdown(render_article_card(artigos_exibicao[i + 1]), unsafe_allow_html=True)
+                render_article_card(artigos_exibicao[i + 1])
