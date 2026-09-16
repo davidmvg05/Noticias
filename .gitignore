@@ -1,0 +1,22 @@
+# Ambientes virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# Variáveis de ambiente e segredos
+.env
+.streamlit/secrets.toml
+
+# Diretórios temporários e cache
+.tmp/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# IDEs e sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
