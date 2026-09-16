@@ -908,22 +908,66 @@ if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 
 if not st.session_state["autenticado"]:
-    col_a, col_b, col_c = st.columns([1, 1.8, 1])
+    st.html(
+        """
+        <style>
+        /* Centralização Vertical e Horizontal Perfeita do Ecrã de Autenticação por PIN */
+        .stApp [data-testid="stMainBlockContainer"] {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            min-height: calc(100vh - 4rem) !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* Centralizar o bloco horizontal no centro geométrico */
+        div[data-testid="stHorizontalBlock"]:has([data-testid="stForm"]) {
+            width: 100% !important;
+            margin-top: auto !important;
+            margin-bottom: auto !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* Ocultar estritamente a frase 'Introduza o PIN:' */
+        div[data-testid="stTextInput"] label,
+        div[data-testid="stWidgetLabel"],
+        label[data-testid="stWidgetLabel"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Formulário de PIN sem bordas desnecessárias */
+        div[data-testid="stForm"] {
+            border: none !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }
+        </style>
+        """
+    )
+
+    col_a, col_b, col_c = st.columns([1, 1.4, 1])
     with col_b:
         st.markdown(
             """
-            <div style="text-align: center; margin-bottom: 20px; margin-top: 30px;">
-                <div style="display: flex; justify-content: center; margin-bottom: 12px;">
-                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#0051ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <div style="text-align: center; margin-bottom: 22px;">
+                <div style="display: flex; justify-content: center; margin-bottom: 14px;">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0051ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="rgba(0, 81, 255, 0.08)"></rect>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         <circle cx="12" cy="16" r="1.5" fill="#0051ff"></circle>
                     </svg>
                 </div>
-                <h2 style="text-align: center; margin: 0 0 6px 0; font-size: 1.6rem; font-weight: 800; color: inherit;">
+                <h2 style="text-align: center; margin: 0 0 8px 0; font-size: 1.65rem; font-weight: 800; color: inherit;">
                     Acesso Restrito
                 </h2>
-                <p style="color: #64748b; font-size: 0.94rem; margin: 0;">
+                <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
                     Introduza o seu PIN de segurança para aceder ao painel.
                 </p>
             </div>
@@ -932,7 +976,12 @@ if not st.session_state["autenticado"]:
         )
 
         with st.form("form_pin_auth", clear_on_submit=False):
-            pin_digitado = st.text_input("Introduza o PIN:", type="password")
+            pin_digitado = st.text_input(
+                "Introduza o PIN:",
+                type="password",
+                label_visibility="collapsed",
+                placeholder="••••"
+            )
             submetido = st.form_submit_button(
                 "Desbloquear Painel",
                 use_container_width=True,
