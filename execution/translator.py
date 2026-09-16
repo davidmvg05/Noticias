@@ -105,7 +105,28 @@ def translate_text_to_pt(text: str) -> str:
     if clean in cache:
         return cache[clean]
 
-    # Tentativa de tradução via MyMemory (especificando pt-PT)
+    # 1. Tentativa primária: Google Translate API (rápido, fiável e sem bloqueios 429)
+    try:
+        url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt-PT&dt=t&q={urllib.parse.quote(clean[:1500])}"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) NewsRadar/1.0"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=4.0) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            if data and isinstance(data, list) and data[0]:
+                translated_parts = [part[0] for part in data[0] if part and part[0]]
+                translated = "".join(translated_parts).strip()
+                if translated:
+                    cache[clean] = translated
+                    save_cache()
+                    return translated
+    except Exception as e:
+        logger.debug(f"Falha ao traduzir via Google Translate API: {e}")
+
+    # 2. Tentativa secundária: MyMemory (especificando pt-PT)
     try:
         url = f"https://api.mymemory.translated.net/get?q={urllib.parse.quote(clean[:500])}&langpair=en|pt-PT"
         req = urllib.request.Request(
@@ -118,7 +139,6 @@ def translate_text_to_pt(text: str) -> str:
             data = json.loads(resp.read().decode("utf-8"))
             if data and data.get("responseData") and data["responseData"].get("translatedText"):
                 translated = data["responseData"]["translatedText"]
-                # Filtrar respostas de erro do MyMemory
                 if not translated.startswith("MYMEMORY WARNING:") and "QUERY LENGTH LIMIT" not in translated:
                     cache[clean] = translated
                     save_cache()
@@ -126,7 +146,7 @@ def translate_text_to_pt(text: str) -> str:
     except Exception as e:
         logger.debug(f"Falha ao traduzir via MyMemory: {e}")
 
-    # Retorna o texto original se o serviço falhar
+    # Retorna o texto original se os serviços falharem
     return clean
 
 

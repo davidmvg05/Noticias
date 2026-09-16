@@ -272,12 +272,29 @@ def fetch_feed_items(feed_info: dict) -> list[dict]:
     return items
 
 
+from execution.translator import get_article_translation
+
+
 def enrich_article_image(item: dict) -> dict:
     """Se o artigo não tiver imagem, busca og:image da página original."""
     if not item.get("imagem"):
         img = fetch_og_image(item["url"], timeout=3.0)
         if img:
             item["imagem"] = img
+
+    # Pré-computar verificação e tradução para PT-PT em segundo plano com cache persistente
+    try:
+        is_en, pt_title, pt_lead = get_article_translation(
+            item.get("titulo", ""),
+            item.get("resumo", ""),
+            fonte=item.get("fonte", "")
+        )
+        item["is_en"] = is_en
+        item["titulo_pt"] = pt_title
+        item["resumo_pt"] = pt_lead
+    except Exception as e:
+        logger.debug(f"Erro ao traduzir artigo no feed: {e}")
+
     return item
 
 

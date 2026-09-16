@@ -18,6 +18,7 @@ import hashlib
 import streamlit as st
 
 from execution.fetch_feeds import run_collection, OUTPUT_FILE
+from execution.translator import get_article_translation
 
 # Configuração da Página
 st.set_page_config(
@@ -465,11 +466,45 @@ st.html(
     .card-bottom-row {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
-        gap: 8px;
+        justify-content: space-between;
+        gap: 10px;
         margin-top: auto;
-        padding-top: 6px;
+        padding-top: 8px;
         flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    /* Botão Traduzir Cartão (Individual PT-PT) */
+    .btn-translate-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0, 81, 255, 0.08) !important;
+        color: #0051ff !important;
+        border: 1.5px solid #0051ff !important;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        padding: 7px 14px;
+        cursor: pointer;
+        box-shadow: none !important;
+        transform: none !important;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+        white-space: nowrap;
+        user-select: none;
+        outline: none;
+    }
+
+    .btn-translate-card:hover {
+        background: rgba(0, 81, 255, 0.16) !important;
+        color: #003ecb !important;
+        border-color: #003ecb !important;
+    }
+
+    .btn-translate-card.translated {
+        background: #0051ff !important;
+        color: #ffffff !important;
+        border-color: #0051ff !important;
     }
 
     /* Botão firme e estável Ler o Artigo Original com #0051ff */
@@ -488,6 +523,7 @@ st.html(
         transform: none !important;
         transition: background-color 0.15s ease !important;
         white-space: nowrap;
+        margin-left: auto;
     }
 
     .btn-read-article:hover {
@@ -777,6 +813,41 @@ st.html(
     }
     window.addEventListener('DOMContentLoaded', disablePinAutocomplete);
     setInterval(disablePinAutocomplete, 300);
+
+    // Função de alternância da tradução do cartão individual (sem recarregar o Streamlit)
+    function toggleCardTranslation(cardId, btn) {
+        var card = document.getElementById(cardId);
+        if (!card) return;
+        var titleEl = card.querySelector('.card-news-title');
+        var leadEl = card.querySelector('.card-news-lead');
+        var btnText = btn.querySelector('.btn-text');
+        var isTranslated = btn.getAttribute('data-translated') === 'true';
+
+        if (isTranslated) {
+            // Reverter para o texto original (EN)
+            if (titleEl && titleEl.getAttribute('data-en')) {
+                titleEl.textContent = titleEl.getAttribute('data-en');
+            }
+            if (leadEl && leadEl.getAttribute('data-en')) {
+                leadEl.textContent = leadEl.getAttribute('data-en');
+            }
+            btn.setAttribute('data-translated', 'false');
+            btn.classList.remove('translated');
+            if (btnText) btnText.textContent = 'Traduzir (PT)';
+        } else {
+            // Alternar para o texto em Português de Portugal (pt-PT)
+            if (titleEl && titleEl.getAttribute('data-pt')) {
+                titleEl.textContent = titleEl.getAttribute('data-pt');
+            }
+            if (leadEl && leadEl.getAttribute('data-pt')) {
+                leadEl.textContent = leadEl.getAttribute('data-pt');
+            }
+            btn.setAttribute('data-translated', 'true');
+            btn.classList.add('translated');
+            if (btnText) btnText.textContent = 'Ver Original (EN)';
+        }
+    }
+    window.toggleCardTranslation = toggleCardTranslation;
     </script>
 
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -1016,7 +1087,7 @@ else:
 # ==============================================================================
 
 def render_article_card(item: dict) -> str:
-    """Renderiza o HTML do cartão sem código acidental ou indentação Markdown indevida."""
+    """Renderiza o HTML do cartão com suporte a tradução individual instantânea via JavaScript."""
     cat_key = item.get("_cat_key", "economia")
     img_url = get_article_image(item, cat_key)
     fallback_img = get_category_fallback_image(item, cat_key)
@@ -1035,8 +1106,34 @@ def render_article_card(item: dict) -> str:
     safe_url = html.escape(raw_url, quote=True)
     safe_date = html.escape(raw_date)
 
+    # Obter tradução (do item pré-calculado ou através do módulo com cache persistente)
+    is_en = item.get("is_en")
+    pt_title = item.get("titulo_pt")
+    pt_lead = item.get("resumo_pt")
+    if is_en is None or pt_title is None or pt_lead is None:
+        is_en, pt_title, pt_lead = get_article_translation(raw_title, raw_lead, raw_source)
+
+    if is_en and (pt_title != raw_title or pt_lead != raw_lead):
+        safe_attr_title_en = html.escape(raw_title, quote=True)
+        safe_attr_title_pt = html.escape(pt_title, quote=True)
+        safe_attr_lead_en = html.escape(raw_lead, quote=True)
+        safe_attr_lead_pt = html.escape(pt_lead, quote=True)
+
+        title_html = f'<div class="card-news-title" data-en="{safe_attr_title_en}" data-pt="{safe_attr_title_pt}">{safe_title}</div>'
+        lead_html = f'<div class="card-news-lead" data-en="{safe_attr_lead_en}" data-pt="{safe_attr_lead_pt}">{safe_lead}</div>'
+        translate_btn_html = (
+            f'<button type="button" class="btn-translate-card" onclick="toggleCardTranslation(\'{card_id}\', this)" data-translated="false" title="Traduzir para Português de Portugal">'
+            f'<i class="fa-solid fa-language"></i> <span class="btn-text">Traduzir (PT)</span>'
+            f'</button>'
+        )
+    else:
+        title_html = f'<div class="card-news-title">{safe_title}</div>'
+        lead_html = f'<div class="card-news-lead">{safe_lead}</div>'
+        translate_btn_html = ""
+
     bottom_html = (
         f'<div class="card-bottom-row">'
+        f'{translate_btn_html}'
         f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer" class="btn-read-article">'
         f'<i class="fa-solid fa-arrow-up-right-from-square"></i> Ler o Artigo Original'
         f'</a>'
@@ -1052,8 +1149,8 @@ def render_article_card(item: dict) -> str:
         f'</div>'
         f'<div class="card-body-content">'
         f'<div class="date-text-clean">{safe_date}</div>'
-        f'<div class="card-news-title">{safe_title}</div>'
-        f'<div class="card-news-lead">{safe_lead}</div>'
+        f'{title_html}'
+        f'{lead_html}'
         f'{bottom_html}'
         f'</div>'
         f'</div>'
